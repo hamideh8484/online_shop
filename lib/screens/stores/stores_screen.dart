@@ -1,115 +1,161 @@
 import 'package:flutter/material.dart';
+import 'package:online_shop/model/product.dart';
+import 'package:online_shop/providers/ProductProvider.dart';
+import 'package:online_shop/widget/product/product_card.dart';
+import 'package:online_shop/screens/product/product_detail_screen.dart';
+import 'package:online_shop/widget/product/hearder.dart';
+import 'package:online_shop/widget/product/most_popular.dart';
+import 'package:online_shop/widget/product/search_field.dart';
+import 'package:online_shop/screens/product/all_product.dart';
+import 'package:online_shop/screens/stores/all_stores.dart';
+import 'package:online_shop/screens/stores/Categories_of_stores.dart';
 import 'package:provider/provider.dart';
-import 'package:online_shop/providers/StoresProvider.dart';
-import 'package:online_shop/screens/components/stores_widget.dart';
 
-class SpecialOfferScreen extends StatefulWidget {
-  const SpecialOfferScreen({super.key});
+class StoresScreen extends StatefulWidget {
+  final String title;
+
+  static String route() => '/stores';
+
+  const StoresScreen({super.key, required this.title});
 
   @override
-  State<SpecialOfferScreen> createState() => _SpecialOfferScreenState();
-
-  static String route() => '/special_offers';
+  State<StatefulWidget> createState() => _StoresScreenState();
 }
 
-class _SpecialOfferScreenState extends State<SpecialOfferScreen> {
-  bool isSearchVisible = false;
-  TextEditingController searchController = TextEditingController();
-  String searchQuery = "";
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<StoresProvider>(context, listen: false).fetchStores();
-    });
-  }
-
-  void toggleSearch() {
-    setState(() {
-      isSearchVisible = !isSearchVisible;
-      if (!isSearchVisible) {
-        searchQuery = "";
-        searchController.clear();
-      }
-    });
-  }
-
+class _StoresScreenState extends State<StoresScreen> {
   @override
   Widget build(BuildContext context) {
+    const padding = EdgeInsets.fromLTRB(24, 24, 24, 0);
     return Scaffold(
-      appBar: AppBar(
-        title: isSearchVisible
-            ? TextField(
-                controller: searchController,
-                autofocus: true,
-                style: TextStyle(color: Colors.black, fontSize: 16),
-                decoration: InputDecoration(
-                  hintText: "جستجو بر اساس نام فروشگاه...",
-                  hintStyle: TextStyle(color: Colors.grey.shade600),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey.shade600),
-                  filled: true,
-                  fillColor: Colors.grey.shade200, // پس‌زمینه نرم و روشن
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  // border: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(32),
-                  //   borderSide: BorderSide.none,
-                  // ),
-                  // focusedBorder: OutlineInputBorder(
-                  //   borderRadius: BorderRadius.circular(32),
-                  //   borderSide:
-                  //       BorderSide(color: Colors.blueAccent, width: 1.5),
-                  // ),
-                ),
-                onChanged: (query) {
-                  setState(() {
-                    searchQuery = query.toLowerCase();
-                  });
-                },
-              )
-            : Text('فروشگاه ها'),
-        actions: [
-          IconButton(
-            icon: Image.asset('assets/icons/search@2x.png', scale: 2.0),
-            onPressed: toggleSearch,
+      body: CustomScrollView(
+        slivers: <Widget>[
+          const SliverPadding(
+            padding: EdgeInsets.only(top: 24),
+            sliver: SliverAppBar(
+              pinned: true,
+              flexibleSpace: HomeAppBar(),
+            ),
           ),
+          SliverPadding(
+            padding: padding,
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                ((context, index) => _buildBody(context)),
+                childCount: 1,
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: padding,
+            sliver: Consumer<ProductProvider>(
+              builder: (context, productProvider, child) {
+                if (productProvider.isLoading) {
+                  return SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                } else if (productProvider.product.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Center(child: Text('کالایی موجود نیست')),
+                  );
+                } else {
+                  return SliverGrid(
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 185,
+                      mainAxisSpacing: 24,
+                      crossAxisSpacing: 16,
+                      mainAxisExtent: 285,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => _buildPopularItem(
+                          context, productProvider.product[index]),
+                      childCount: productProvider.product.length,
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+          const SliverAppBar(flexibleSpace: SizedBox(height: 24))
         ],
       ),
-      body: Consumer<StoresProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          final filteredStores = provider.stores
-              .where((store) => store.title.toLowerCase().contains(searchQuery))
-              .toList();
-
-          if (filteredStores.isEmpty) {
-            return Center(child: Text('No special offers available'));
-          }
-
-          return ListView.separated(
-            padding: const EdgeInsets.all(24),
-            itemBuilder: (context, index) {
-              final data = filteredStores[index];
-              return Container(
-                height: 181,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE7E7E7),
-                  borderRadius: BorderRadius.all(Radius.circular(32)),
-                ),
-                child: StoresWidget(context, data: data, index: index),
-              );
-            },
-            itemCount: filteredStores.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return const SizedBox(height: 24);
-            },
-          );
-        },
-      ),
     );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return Column(
+      children: [
+        const SearchField(),
+        const SizedBox(height: 24),
+        CategoriesOfStores(
+            onTapSeeAll: () => _onTapSpecialOffersSeeAll(context)),
+        const SizedBox(height: 24),
+        ConfigurableTitle(
+          title: 'فروشگاه‌ها',
+          onTapSeeAll: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AllStoresScreen(),
+            ));
+          },
+        ),
+        const SizedBox(height: 24),
+        const MostPupularCategory(),
+      ],
+    );
+  }
+
+  // Widget _buildPopulars(BuildContext context) {
+  //   return FutureBuilder(
+  //     future:
+  //         Provider.of<ProductProvider>(context, listen: false).fetchProducts(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return SliverToBoxAdapter(
+  //           child: Center(child: CircularProgressIndicator()),
+  //         );
+  //       } else if (snapshot.hasError) {
+  //         return SliverToBoxAdapter(
+  //           child: Center(child: Text('Error: ${snapshot.error}')),
+  //         );
+  //       } else {
+  //         return Consumer<ProductProvider>(
+  //           builder: (context, productProvider, child) {
+  //             final datas = productProvider.product;
+  //             return SliverPadding(
+  //               padding: const EdgeInsets.all(24),
+  //               sliver: SliverGrid(
+  //                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+  //                   maxCrossAxisExtent: 185,
+  //                   mainAxisSpacing: 24,
+  //                   crossAxisSpacing: 16,
+  //                   mainAxisExtent: 285,
+  //                 ),
+  //                 delegate: SliverChildBuilderDelegate(
+  //                   (context, index) =>
+  //                       _buildPopularItem(context, datas[index]),
+  //                   childCount: datas.length,
+  //                 ),
+  //               ),
+  //             );
+  //           },
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
+
+  Widget _buildPopularItem(BuildContext context, Product data) {
+    return ProductCard(
+      data: data,
+      ontap: (data) => Navigator.pushNamed(context, ShopDetailScreen.route()),
+    );
+  }
+
+  void _onTapMostPopularSeeAll(BuildContext context) {
+    Navigator.pushNamed(context, AllProductScreen.route());
+  }
+
+  void _onTapSpecialOffersSeeAll(BuildContext context) {
+    Navigator.pushNamed(context, AllStoresScreen.route());
   }
 }

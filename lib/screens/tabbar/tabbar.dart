@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:online_shop/screens/cart/cart_screen.dart';
+import 'package:online_shop/screens/stores/stores_screen.dart';
 import 'package:online_shop/widget/image_loader.dart';
-import 'package:online_shop/screens/home/home.dart';
+import 'package:online_shop/screens/product/product_screens.dart';
 import 'package:online_shop/screens/profile/profile_screen.dart';
-import 'package:online_shop/screens/test/test_screen.dart';
+import 'package:online_shop/screens/shopping_cart/shopping_cart.dart';
 import 'package:online_shop/widget/size_config.dart';
 
 class TabbarItem {
@@ -35,48 +37,89 @@ class _FRTabbarScreenState extends State<FRTabbarScreen> {
   int _select = 0;
 
   final screens = [
-    const HomeScreen(
-      title: 'home',
+    const GoodsScreen(
+      title: 'Goods',
     ),
-    const TestScreen(title: 'Cart'),
-    // const TestScreen(title: 'Orders'),
-    const TestScreen(title: 'Wallet'),
+    const StoresScreen(title: 'stores'),
+    const ShoppingCartScreen(),
+    const CartScreen(),
     const ProfileScreen(),
   ];
 
-  static Image generateIcon(String path) {
-    return Image.asset(
-      '${ImageLoader.rootPaht}/tabbar/$path',
-      width: 24,
-      height: 24,
-    );
-  }
+  // static Image generateIcon(String path) {
+  //   return Image.asset(
+  //     '${ImageLoader.rootPaht}/tabbar/$path',
+  //     width: 24,
+  //     height: 24,
+  //   );
+  // }
 
   final List<BottomNavigationBarItem> items = [
     BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/icons/light/shop_o.png')),
-      activeIcon: ImageIcon(AssetImage('assets/icons/bold/shop_f.png')),
+      icon: Image.asset(
+        'assets/icons/light/goods_o.png',
+        width: 25,
+        height: 25,
+      ),
+      activeIcon: Image.asset(
+        'assets/icons/bold/goods_f.png',
+        width: 35,
+        height: 35,
+      ),
+      label: 'کالا ها',
+    ),
+    BottomNavigationBarItem(
+      icon: Image.asset(
+        'assets/icons/light/shop.png',
+        // 'assets/icons/light/shop_o.png',
+        width: 25,
+        height: 25,
+      ),
+      activeIcon: Image.asset(
+        'assets/icons/bold/shop_bold.png',
+        // 'assets/icons/bold/shop_f.png',
+        width: 35,
+        height: 35,
+      ),
       label: 'فروشگاه',
     ),
     BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/icons/light/shopping_cart_o.png')),
-      activeIcon:
-          ImageIcon(AssetImage('assets/icons/bold/shopping_cart_f.png')),
+      icon: Image.asset(
+        'assets/icons/light/shopping_cart_o.png',
+        width: 25,
+        height: 25,
+      ),
+      activeIcon: Image.asset(
+        'assets/icons/bold/shopping_cart_f.png',
+        width: 35,
+        height: 35,
+      ),
       label: 'سبد خرید',
     ),
-    // BottomNavigationBarItem(
-    //   icon: ImageIcon(AssetImage('assets/icons/light/heart@2x.png')),
-    //   activeIcon: ImageIcon(AssetImage('assets/icons/bold/heart@2x.png')),
-    //   label: 'سفارشات',
-    // ),
     BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/icons/light/cart_o.png')),
-      activeIcon: ImageIcon(AssetImage('assets/icons/bold/cart_f.png')),
+      icon: Image.asset(
+        'assets/icons/light/cart_o.png',
+        width: 25,
+        height: 25,
+      ),
+      activeIcon: Image.asset(
+        'assets/icons/bold/cart_f.png',
+        width: 35,
+        height: 35,
+      ),
       label: 'کیف پول',
     ),
     BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage('assets/icons/light/profile_o.png')),
-      activeIcon: ImageIcon(AssetImage('assets/icons/bold/profile_f.png')),
+      icon: Image.asset(
+        'assets/icons/light/profile_o.png',
+        width: 25,
+        height: 25,
+      ),
+      activeIcon: Image.asset(
+        'assets/icons/bold/profile_f.png',
+        width: 35,
+        height: 35,
+      ),
       label: 'پروفایل',
     ),
   ];

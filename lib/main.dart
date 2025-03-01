@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:online_shop/providers/CategoriProvider.dart';
+import 'package:online_shop/providers/ProductNatureProvider.dart';
+import 'package:online_shop/providers/ProductProvider.dart';
+import 'package:online_shop/providers/TotalPriceProvider.dart';
+import 'package:online_shop/providers/themeProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:online_shop/providers/StoresProvider.dart';
 import 'package:online_shop/screens/login/data/login.dart';
@@ -11,9 +16,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   String? token = await getToken();
   print(token);
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(create: (_) => StoresProvider()),
-  ], child: FreshBuyerApp(token: token)));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => ProductNatureProvider()),
+        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (_) => StoresProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        // ChangeNotifierProvider(create: (_) => TotalPriceProvider()),
+      ],
+      child: FreshBuyerApp(token: token),
+    ),
+  );
 }
 
 class FreshBuyerApp extends StatelessWidget {
@@ -23,14 +38,20 @@ class FreshBuyerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl, // راست‌چین کردن متن‌ها
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Fresh-Buyer',
-        theme:
-            appTheme(), // اطمینان از اینکه تم اپلیکیشن از راست‌چین پشتیبانی می‌کند
-        routes: routes,
-        home: token != null ? FRTabbarScreen() : const LoginScreen(),
+      textDirection: TextDirection.rtl,
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'فروشگاه آنلاین',
+            theme: appTheme(),
+            darkTheme: darkTheme(),
+            themeMode: themeNotifier.isDark ? ThemeMode.dark : ThemeMode.light,
+            routes: routes,
+            onGenerateRoute: onGenerateRoute,
+            home: token != null ? FRTabbarScreen() : const LoginScreen(),
+          );
+        },
       ),
     );
   }

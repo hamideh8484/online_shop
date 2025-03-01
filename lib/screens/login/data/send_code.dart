@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:online_shop/screens/login/data/base_url.dart';
+import 'package:online_shop/services/base_url.dart';
 
 class SendCodeService {
   final ApiService _apiService = ApiService();
@@ -18,7 +18,6 @@ class SendCodeService {
         String? tempToken = data?['tempToken'];
 
         if (tempToken != null) {
-          // ذخیره توکن موقت
           await saveTempToken(tempToken);
           print('Temporary token saved: $tempToken');
         } else {
@@ -41,15 +40,15 @@ class SendCodeService {
 
 Future<void> saveTempToken(String token) async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('tempToken', token); // ذخیره توکن موقت
+  await prefs.setString('tempToken', token);
 }
 
 Future<String?> getTempToken() async {
   final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('tempToken'); // گرفتن توکن موقت
+  return prefs.getString('tempToken');
 }
 
 Future<void> removeTempToken() async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('tempToken'); // حذف توکن موقت
+  await prefs.remove('tempToken');
 }

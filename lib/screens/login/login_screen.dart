@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:online_shop/widget/login/animations.dart';
@@ -19,13 +19,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final SendCodeService _sendCodeService = SendCodeService();
-
-  final httpClien = HttpClient();
+  final HttpClient httpClien = HttpClient();
   int selectedIndex = 0;
   bool showOption = false;
   final _phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,8 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
           fit: BoxFit.fill,
         ),
       ),
-      alignment: Alignment.center,
-      child: _buildContent(),
+      alignment: Alignment.topCenter,
+      child: Center(
+        child: _buildContent(),
+      ),
     );
   }
 
@@ -158,9 +159,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Spacer(),
                     Padding(
                       padding: const EdgeInsets.only(right: 25.0),
-                      child: TextUtil(
-                        text: "لطفا شماره موبایل خود را وارد کنید",
-                        color: Colors.black,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 180.0),
+                            child: Text(
+                              "!سلام ",
+                              style: TextStyle(fontSize: 22),
+                            ),
+                          ),
+                          TextUtil(
+                            text: "لطفا شماره موبایل خود را وارد کنید",
+                            color: Colors.black,
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -216,7 +229,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               onChanged: (value) {
-                // Ensure leading zero is handled correctly
                 if (value.startsWith('0')) {
                   _phoneController.text = value.substring(1);
                   _phoneController.selection = TextSelection.fromPosition(
@@ -250,48 +262,73 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 40,
           width: 80,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.black,
             borderRadius: BorderRadius.circular(30),
           ),
           alignment: Alignment.center,
           child: ElevatedButton(
-            onPressed: () async {
-              if (_formKey.currentState?.validate() ?? false) {
-                String phoneNumber = '0' + _phoneController.text;
-                try {
-                  final response = await _sendCodeService.sendCode(phoneNumber);
-
-                  if (response['status'] == true) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ConfirmationScreen(
-                          phoneNumber: phoneNumber,
-                        ),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(response['message'] ?? 'خطا در ارسال کد'),
-                      ),
-                    );
-                    print(response['message'] ?? 'خطا در ارسال کد');
-                  }
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('خطا: $e'),
-                    ),
-                  );
-                  print('خطا:$e');
-                }
-              }
-            },
-            child: Text(
-              'تایید',
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+            style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll(Colors.black),
             ),
+            onPressed: isLoading
+                ? null
+                : () async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                      setState(() {
+                        isLoading = true;
+                      });
+
+                      String phoneNumber = '0' + _phoneController.text;
+
+                      try {
+                        final response =
+                            await _sendCodeService.sendCode(phoneNumber);
+
+                        if (mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+
+                        if (response['status'] == true) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => ConfirmationScreen(
+                                phoneNumber: phoneNumber,
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  response['message'] ?? 'خطا در ارسال کد'),
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('خطا: $e'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+            child: isLoading
+                ? const CupertinoActivityIndicator(
+                    color: Colors.white, radius: 10)
+                : const Text(
+                    'تایید',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
           ),
         ),
       ),

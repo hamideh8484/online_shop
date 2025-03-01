@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
 class ShowUpAnimation extends StatefulWidget {
-  /// GETTING THE CHILD WIDGET
   final Widget child;
 
-  /// GETTING THE ANIMATION DURATION
   int? delay;
 
   ShowUpAnimation({super.key, required this.child, this.delay});

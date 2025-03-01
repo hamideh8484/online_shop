@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ConfirmationTextField extends StatelessWidget {
+class ConfirmationTextField extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final void Function(String) onChanged;
@@ -13,31 +13,41 @@ class ConfirmationTextField extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ConfirmationTextFieldState createState() => _ConfirmationTextFieldState();
+}
+
+class _ConfirmationTextFieldState extends State<ConfirmationTextField> {
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 50,
-      height: 60,
+      width: 70,
+      height: 80,
       child: TextField(
-        controller: controller,
-        focusNode: focusNode
+        controller: widget.controller,
+        focusNode: widget.focusNode
           ..addListener(() {
-            print('Focus: ${focusNode.hasFocus}');
+            print('Focus: ${widget.focusNode.hasFocus}');
           }),
         textAlign: TextAlign.center,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
+          hintText: widget.controller.text,
+          hintStyle: TextStyle(color: Colors.black),
+          contentPadding: EdgeInsets.only(left: 10),
           counterText: '',
-          hintText: '_',
         ),
         maxLength: 1,
         keyboardType: TextInputType.number,
-        textInputAction: TextInputAction.next,
         onChanged: (value) {
+          setState(() {
+            widget.controller.text = value;
+            widget.controller.selection =
+                TextSelection.collapsed(offset: value.length);
+          });
           print('Value: $value');
-          controller.text = value;
-          controller.selection = TextSelection.collapsed(offset: value.length);
-          onChanged(value);
+          widget.onChanged(value);
         },
+        style: TextStyle(fontSize: 30),
       ),
     );
   }

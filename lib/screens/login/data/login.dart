@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_shop/screens/login/data/send_code.dart';
 
 Future<bool> sendCodeAndLogin(String tempToken, String code) async {
-  final uri = Uri.parse('http://192.168.1.201:83/api/auth/verifyCode');
+  final uri = Uri.parse('http://192.168.1.111:83/api/auth/verifyCode');
 
   try {
     final response = await http.post(
@@ -24,8 +24,8 @@ Future<bool> sendCodeAndLogin(String tempToken, String code) async {
         String? authToken = data?['token'];
 
         if (authToken != null) {
-          await saveToken(authToken); // ذخیره توکن نهایی
-          await removeTempToken(); // حذف توکن موقت
+          await saveToken(authToken);
+          await removeTempToken();
         } else {
           print('Token is null');
         }

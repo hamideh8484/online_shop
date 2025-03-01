@@ -137,7 +137,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '+98${widget.phoneNumber.substring(1)}', // حذف 0 از ابتدا
+                        '+98${widget.phoneNumber.substring(1)}',
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -164,7 +164,6 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                                         .requestFocus(_focusNodes[index - 1]);
                                   }
 
-                                  // Since we don't print debug log, just invoke the checkAndNavigate function gently
                                   checkAndNavigate(context, _controllers,
                                       widget.phoneNumber);
                                 },
@@ -187,14 +186,15 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                                     }
                                   : null,
                               style: TextButton.styleFrom(
-                                foregroundColor: Colors.blue,
+                                foregroundColor:
+                                    const Color.fromARGB(255, 13, 133, 231),
                                 textStyle: const TextStyle(fontSize: 16),
                               ),
                               child: Text(
                                 _start == 0 ? 'ارسال مجدد' : timerText,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                                  fontSize: 18,
                                 ),
                               ),
                             ),
@@ -209,7 +209,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 16,
                                 ),
                                 textAlign: TextAlign.center,
                               ),

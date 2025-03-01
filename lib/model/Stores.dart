@@ -14,7 +14,7 @@ class StoresModel {
   final Map<String, dynamic>? logo;
   final Map<String, dynamic>? banner;
   final City city;
-  final StoreType storeType;
+  final List<dynamic> storeTypes;
 
   StoresModel({
     required this.id,
@@ -30,7 +30,7 @@ class StoresModel {
     this.logo,
     this.banner,
     required this.city,
-    required this.storeType,
+    required this.storeTypes,
   });
 
   factory StoresModel.fromJson(Map<String, dynamic> json) {
@@ -52,7 +52,9 @@ class StoresModel {
       logo: json['logo'],
       banner: json['banner'],
       city: City.fromJson(json['city']),
-      storeType: StoreType.fromJson(json['storeType']),
+      storeTypes: json['storeTypes'] != null
+          ? List<dynamic>.from(json['storeTypes'])
+          : [],
     );
   }
 }

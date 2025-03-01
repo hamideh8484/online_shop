@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:online_shop/screens/login/data/base_url.dart';
+import 'package:online_shop/services/base_url.dart';
 import 'package:online_shop/model/Stores.dart';
 
 class StoresProvider with ChangeNotifier {

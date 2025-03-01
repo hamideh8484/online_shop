@@ -12,6 +12,6 @@ List<String> bgList = [
   // "assets/images/login/background/bg10.jpg",
   // "assets/images/login/background/bg11.jpg",
   // "assets/images/login/background/bg12.jpg",
-  "assets/images/login/background/bg24.jpg",
   "assets/images/login/background/bg25.jpg",
+  "assets/images/login/background/bg24.jpg",
 ];
